@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.mappers.UserMapper">
+	
+		<!-- 为了返回list 类型而定义的returnMap -->
+	<resultMap type="com.user.entity.User" id="userResultMap">
+        <id column="ID" property="id" />
+        <result column="USER_NAME" property="userName" />
+		<result column="PASSWORD" property="password" />
+    </resultMap>
+
+
+    <select id="getByCondition" resultMap="userResultMap" parameterType="com.user.entity.User">
+        select * from user
+		<where>
+			<if test="id != null">AND id = #{id,jdbcType= NUMERIC }</if>
+			<if test="userName != null">AND user_name like #{'%'+userName+'%',jdbcType= VARCHAR }</if>
+			<if test="password != null">AND password  like #{'%'+password+'%',jdbcType= VARCHAR }</if>
+		</where>
+	</select>
+    
+	<select id="getUserById" resultMap="userResultMap" parameterType="long">
+		SELECT *
+		FROM user
+		WHERE id = #{_parameter,jdbcType=NUMERIC }
+	</select>
+
+	<insert id="insert" parameterType="com.user.entity.User">
+		INSERT INTO USER (ID,USER_NAME,PASSWORD)
+		VALUES (
+		null,
+		#{userName,jdbcType=VARCHAR },
+		#{password,jdbcType=VARCHAR }
+		)
+	</insert>
+
+	<update id="update" parameterType="com.user.entity.User">
+		update USER
+		set USER_NAME = #{userName,jdbcType=VARCHAR},
+		PASSWORD = #{password,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=NUMERIC}
+	</update>
+
+	<delete id="delete" parameterType="long" >
+		delete from user where id = #{id,jdbcType=NUMERIC}
+	</delete>
+</mapper>

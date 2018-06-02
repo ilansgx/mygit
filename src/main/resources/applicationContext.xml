@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/tx 
+  	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+	
+	<!--<import resource="classpath:spring/applicationContext-*.xml" />-->
+	
+	<context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan
+			base-package="com.user.*"/>
+	
+	<!-- dataSource -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="minPoolSize" value="${jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${jdbc.maxPoolSize}" />
+		<property name="initialPoolSize" value="${jdbc.initialPoolSize}" />
+		<property name="maxIdleTime" value="${jdbc.maxIdleTime}" />
+		<property name="acquireIncrement" value="${jdbc.acquireIncrement}" />
+		<property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--dataSource属性指定要用到的连接池-->
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:config.xml" />
+		<!--configLocation属性指定mybatis的核心配置文件-->
+		<property name="mapperLocations" value="classpath*:com/**/mappers/*Mapper.xml" />
+	</bean>
+
+	<!-- 配置SqlSessionTemplate -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<!-- 通过构造函数注入 -->
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+
+	<!-- velocity环境配置 -->
+	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<!-- velocity配置文件路径  或者直接用velocityProperties属性 -->
+		<property name="configLocation" value="classpath:velocity.properties"/>
+		<!-- velocity模板路径 -->
+		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
+	</bean>
+	<!-- velocity视图解析器 -->
+	<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="contentType" value="text/html;charset=UTF-8"/>
+		<property name="cache" value="false"/>
+		<property name="suffix" value=".vm"/>
+		<property name="exposeSpringMacroHelpers" value="true" /><!--是否使用spring对宏定义的支持-->
+		<property name="exposeSessionAttributes" value="true" /><!--是否开放request属性-->
+		<property name="requestContextAttribute" value="request"/><!--request属性引用名称-->
+	</bean>
+</beans>

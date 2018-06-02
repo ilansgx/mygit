@@ -1,0 +1,55 @@
+<html>
+<head>
+<script type="text/javascript">
+    function add() {
+        window.location.href="$!{request.contextPath}/usercontroller/linkToOperate";
+    }
+
+    function edit() {
+        var checks = document.getElementsByName("checkbox");
+        var id = '';
+        for(var i=0;i<checks.length;i++){
+            if(checks[i].checked){
+                id = checks[i].value;
+                break;
+            }
+        }
+        window.location.href="$!{request.contextPath}/usercontroller/linkToOperate?id="+id;
+    }
+
+    function del() {
+        var checks = document.getElementsByName("checkbox");
+        var id = '';
+        for(var i=0;i<checks.length;i++){
+            if(checks[i].checked){
+                id = checks[i].value;
+                break;
+            }
+        }
+        window.location.href="$!{request.contextPath}/usercontroller/delete?id="+id;
+    }
+</script>
+</head>
+<body>
+<table>
+    <tr>
+        <input type="button" value="新增" onclick="add()"> &nbsp;
+        <input type="button" value="修改" onclick="edit()">&nbsp;
+        <input type="button" value="删除" onclick="del()">
+    </tr>
+    <tr>
+        <td><input type="checkbox"></td><td>序号</td><td>用户名</td><td>密码</td>
+    </tr>
+    #foreach($data in $list)
+        <tr>
+            <td><input name="checkbox" type="checkbox" value="$!{data.id}"></td>
+            <td>$!{data.id}</td>
+            <td>$!{data.userName}</td>
+            <td>$!{data.password}</td>
+        </tr>
+    #end
+
+</table>
+
+</body>
+</html>
